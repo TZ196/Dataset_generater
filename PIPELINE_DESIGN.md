@@ -23,76 +23,97 @@
 
 ```
                          ┌─────────────────────┐
-                         │  generate_walker_tle │  Stage 0: 星座 TLE 生成
-                         │  .py                 │
+                         │  tle/                │  Stage 0: 星座 TLE 生成
+                         │  generate_walker_tle │
                          └──────────┬──────────┘
                                     │ .tle 文件
                                     ▼
 ┌──────────────┐          ┌─────────────────────┐
-│ coor_station │──────────▶  visibility_module  │  Stage 1: 星地可见性 [NEW]
-│ .xlsx        │          │  .py                │         (替代 STK)
+│ data/        │──────────▶  visibility/        │  Stage 1: 星地可见性 [NEW]
+│ coor_station │          │  visibility_module  │         (替代 STK)
 └──────────────┘          └──────────┬──────────┘
                                      │ ground_{N}sawable.csv × 910
                                      │ satellite_names.xlsx
                                      ▼
                    ┌─────────────────────────────────┐
-                   │  Ground_Traffic_Matrix.py        │  Stage 2: 地面站-地面站流量
-                   │  + Temprol_module.py             │         GEANT 24h 曲线
-                   │  + Spatial_module.py             │         时区 + 随机分发
+                   │  traffic/                        │  Stage 2: 地面站-地面站流量
+                   │  Ground_Traffic_Matrix.py        │         GEANT 24h 曲线
+                   │  + Temprol_module.py             │         时区 + 随机分发
+                   │  + Spatial_module.py             │
                    └──────────────┬──────────────────┘
                                   │ 1000.xlsx (2000列)
                                   ▼
                    ┌─────────────────────────────────┐
-                   │  Inter_Satellite_Traffic_Matrix  │  Stage 3: 地面流量→星间流量
-                   │  + Ground_To_Satellite_module    │         可见性映射
+                   │  traffic/                        │  Stage 3: 地面流量→星间流量
+                   │  Inter_Satellite_Traffic_Matrix  │         可见性映射
+                   │  + Ground_To_Satellite_module    │
                    └──────────────┬──────────────────┘
                                   │
                                   ▼
                      inter_satellite_traffic/
                      ├── 1.xlsx      ← 第 1 秒的卫星流量矩阵
-                     ├── 2.xlsx      ← 第 2 秒的卫星流量矩阵
                      ├── ...
                      └── 1000.xlsx   ← 第 1000 秒的卫星流量矩阵
 
                                      │
                                      ▼
                    ┌─────────────────────────────────┐
-                   │  topology_module.py              │  Stage 4: 星间邻接矩阵 [NEW]
-                   │  SGP4 传播 + LOS 检测            │         0/1 ISL 拓扑
+                   │  topology/                       │  Stage 4: 星间邻接矩阵 [NEW]
+                   │  topology_module                 │         0/1 ISL 拓扑
+                   │  SGP4 传播 + LOS 检测            │
                    └──────────────┬──────────────────┘
                                   │
                                   ▼
                      adjacency_matrices/
                      ├── 1.xlsx      ← 第 1 秒的邻接矩阵 (N×N, 0/1)
-                     ├── 2.xlsx      ← 第 2 秒的邻接矩阵
                      ├── ...
-                     └── 1000.xlsx   ← 第 1000 秒的卫星流量矩阵
+                     └── 1000.xlsx   ← 第 1000 秒的邻接矩阵
 ```
 
 ---
 
-## 文件清单
+## 目录结构
+
+```
+Dataset_generater/
+├── run_pipeline.py                          # 一键编排入口
+├── PIPELINE_DESIGN.md                       # 本设计文档
+├── data/
+│   └── coor_station.xlsx                    # 910个地面站坐标
+├── tle/
+│   └── generate_walker_tle.py               # Stage 0: Walker星座TLE生成
+├── visibility/
+│   └── visibility_module.py                 # Stage 1: 星地可见性（替代STK）
+├── traffic/
+│   ├── Ground_Traffic_Matrix.py             # Stage 2: 地面站流量矩阵
+│   ├── Inter_Satellite_Traffic_Matrix.py    # Stage 3: 星间流量矩阵
+│   ├── Ground_To_Satellite_module.py        # 可见性窗口→流量映射
+│   ├── Temprol_module.py                    # GEANT 24h时域模型
+│   └── Spatial_module.py                    # 时区+随机空域分发
+└── topology/
+    └── topology_module.py                   # Stage 4: 星间邻接矩阵(0/1)
+```
 
 ### 新增文件
 
-| 文件 | 行数 | 说明 |
-|------|------|------|
-| `visibility_module.py` | ~280 | 核心：SGP4 传播 + 星地仰角计算 + 可见窗口检测 + CSV 输出 |
-| `topology_module.py` | ~220 | 核心：SGP4 传播 + 卫星对 LOS 检测 + 邻接矩阵 0/1 输出 |
-| `run_pipeline.py` | ~260 | 一键编排入口，命令行参数控制所有阶段 |
-| `PIPELINE_DESIGN.md` | — | 本设计文档 |
+| 文件 | 说明 |
+|------|------|
+| `visibility/visibility_module.py` | 核心：SGP4 传播 + 星地仰角计算 + 可见窗口检测 + CSV 输出 |
+| `topology/topology_module.py` | 核心：SGP4 传播 + 卫星对 LOS 检测 + 邻接矩阵 0/1 输出 |
+| `run_pipeline.py` | 一键编排入口，命令行参数控制所有阶段 |
+| `PIPELINE_DESIGN.md` | 本设计文档 |
 
 ### 从原 Dataset_generate 复制并修改的文件
 
 | 文件 | 原目录 | 修改内容 |
 |------|--------|----------|
-| `generate_walker_tle.py` | `../` | TLE 格式修复：国际编号右对齐、偏心率设零 |
-| `Ground_To_Satellite_module.py` | `Dataset_generate/` | 移除 `*60` 时间转换，添加显式 float 转换 |
-| `Ground_Traffic_Matrix.py` | `Dataset_generate/` | 路径相对化，全局参数函数化 |
-| `Inter_Satellite_Traffic_Matrix.py` | `Dataset_generate/` | 路径相对化，自动生成卫星名文件 |
-| `Temprol_module.py` | `Dataset_generate/` | 删除模块级 `pd.read_excel()` 避免 import 报错 |
-| `Spatial_module.py` | `Dataset_generate/` | 删除模块级 `pd.read_excel()` 避免 import 报错 |
-| `coor_station.xlsx` | `Dataset_generate/` | 直接复制（910 站 × lat/lon） |
+| `tle/generate_walker_tle.py` | `../` | TLE 格式修复：国际编号右对齐、偏心率设零 |
+| `traffic/Ground_To_Satellite_module.py` | `Dataset_generate/` | 移除 `*60` 时间转换，添加显式 float 转换 |
+| `traffic/Ground_Traffic_Matrix.py` | `Dataset_generate/` | 路径相对化，全局参数函数化 |
+| `traffic/Inter_Satellite_Traffic_Matrix.py` | `Dataset_generate/` | 路径相对化，自动生成卫星名文件 |
+| `traffic/Temprol_module.py` | `Dataset_generate/` | 删除模块级 `pd.read_excel()` 避免 import 报错 |
+| `traffic/Spatial_module.py` | `Dataset_generate/` | 删除模块级 `pd.read_excel()` 避免 import 报错 |
+| `data/coor_station.xlsx` | `Dataset_generate/` | 直接复制（910 站 × lat/lon） |
 
 
 ---

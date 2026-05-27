@@ -45,7 +45,7 @@ def generate_ground_traffic(
         {output_dir}/1000.xlsx — 地面站流量矩阵
     """
     if coordinate_path is None:
-        coordinate_path = os.path.join(BASE_DIR, 'coor_station.xlsx')
+        coordinate_path = os.path.join(os.path.dirname(BASE_DIR), 'data', 'coor_station.xlsx')
     if output_dir is None:
         output_dir = os.path.join(BASE_DIR, 'ground_traffic')
 

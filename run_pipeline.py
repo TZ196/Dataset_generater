@@ -28,8 +28,12 @@ import sys
 import argparse
 from datetime import datetime, timezone
 
-# 确保能 import 同目录下的模块
+# 确保能 import 各子目录下的模块
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+for subdir in ["tle", "visibility", "traffic", "topology"]:
+    subdir_path = os.path.join(BASE_DIR, subdir)
+    if subdir_path not in sys.path:
+        sys.path.insert(0, subdir_path)
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
@@ -55,8 +59,8 @@ def parse_args():
     g.add_argument("--tle-file", help="使用已有 TLE 文件（跳过 Stage 1）")
 
     # 通用参数
-    p.add_argument("--stations", default=os.path.join(BASE_DIR, "coor_station.xlsx"),
-                   help="地面站坐标 xlsx (默认: coor_station.xlsx)")
+    p.add_argument("--stations", default=os.path.join(BASE_DIR, "data", "coor_station.xlsx"),
+                   help="地面站坐标 xlsx (默认: data/coor_station.xlsx)")
     p.add_argument("--output-dir", default=os.path.join(BASE_DIR, "output"),
                    help="输出根目录 (默认: ./output)")
     p.add_argument("--duration", type=float, default=1000.0,
