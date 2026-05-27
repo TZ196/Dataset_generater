@@ -257,6 +257,11 @@ def main():
     args = parse_args()
     stages = parse_stages(args.stages)
 
+    # 每次运行使用时间戳子目录，避免覆盖之前的结果
+    from datetime import datetime as dt_now
+    ts = dt_now.now().strftime("%Y%m%d_%H%M%S")
+    args.output_dir = os.path.join(args.output_dir, ts)
+
     # 构建子目录
     run_dirs = {
         "tle":        os.path.join(args.output_dir, "tle"),
