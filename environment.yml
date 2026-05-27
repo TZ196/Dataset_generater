@@ -1,0 +1,13 @@
+name: satellite-traffic
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - skyfield
+      - sgp4
+      - numpy
+      - pandas
+      - openpyxl
