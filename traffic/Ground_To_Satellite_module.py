@@ -11,10 +11,10 @@ def cal_ground_sat(g_time, data):
     service_time = {}
     ground_sat = {}
     for i in range(data.shape[0]):
-        ground = str(data.iloc[i][0])
-        sat = str(data.iloc[i][1])
-        start = TIME_UNIT_MULTIPLIER * float(data.iloc[i][2])
-        end = TIME_UNIT_MULTIPLIER * float(data.iloc[i][3])
+        ground = str(data.iloc[i, 0])
+        sat = str(data.iloc[i, 1])
+        start = TIME_UNIT_MULTIPLIER * float(data.iloc[i, 2])
+        end = TIME_UNIT_MULTIPLIER * float(data.iloc[i, 3])
 
         if (ground != last):
             service_time = sorted(service_time.items(), key=lambda kv: (kv[1], kv[0]))
