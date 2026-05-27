@@ -63,19 +63,21 @@ def generate_ground_traffic(
             lat, lon = tem.coord_trans(lat=coor['lat'], lon=coor['lon'])
             time_zone = math.floor(lon / 15)
             value = zone_stat_val_list[time_zone].popleft()
-            # 论文公式(19): 每个站均匀随机选1个不同时区的目的地, F(i,j)=U(0.1,1)×f_i
+            # 论文公式(19): 每站随机选1~3个不同时区目的地, 每条流 F(i,j)=U(0.1,1)×f_i
             random.seed(j * 10000 + i)
-            des_time_zone = time_zone
-            while (des_time_zone == time_zone):
-                des = random.randint(0, n_ter - 1)
-                des_coor = coordinate.loc[des]
-                lat, lon = tem.coord_trans(lat=des_coor['lat'], lon=des_coor['lon'])
-                des_time_zone = math.floor(lon / 15)
-            traffic = random.uniform(0.1, 1.0) * value
+            Des_number = random.randint(1, 3)
             destination.append("*")
             traffic_value.append("*")
-            destination.append(des)
-            traffic_value.append(traffic)
+            for _ in range(Des_number):
+                des_time_zone = time_zone
+                while (des_time_zone == time_zone):
+                    des = random.randint(0, n_ter - 1)
+                    des_coor = coordinate.loc[des]
+                    lat, lon = tem.coord_trans(lat=des_coor['lat'], lon=des_coor['lon'])
+                    des_time_zone = math.floor(lon / 15)
+                traffic = random.uniform(0.1, 1.0) * value
+                destination.append(des)
+                traffic_value.append(traffic)
             destination.append("/")
             traffic_value.append("/")
 
