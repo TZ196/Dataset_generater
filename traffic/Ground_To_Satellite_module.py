@@ -19,13 +19,12 @@ def cal_ground_sat(g_time, data):
         if (ground != last):
             service_time = sorted(service_time.items(), key=lambda kv: (kv[1], kv[0]))
             non_zero_sat = [sat for sat, ser_time in service_time if ser_time != 0.0]
-            print(ground)
             try:
                 sat_index = non_zero_sat
                 ground_sat[last] = sat_index
                 service_time = {}
             except:
-                print("error")
+                pass
 
         if (g_time >= start) & (g_time <= end):
             ser_time = end - g_time
