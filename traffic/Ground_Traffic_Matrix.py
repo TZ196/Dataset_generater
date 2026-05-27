@@ -85,33 +85,25 @@ def generate_ground_traffic(
                     des_time_zone = math.floor(lon / 15)
                 DesNode = Node(des)
                 OringinNode.add_child(DesNode)
-            print(i)
-            print("start")
-
             destination.append("*")
             traffic_value.append("*")
             for child in OringinNode.children:
-                print(child.val)
                 destination.append(child.val)
                 traffic_value.append(value)
             destination.append("/")
             traffic_value.append("/")
-            print("end")
-            print(value)
 
         second.append(destination)
         second.append(traffic_value)
-        print(len(second))
 
-        if len(second) == 2000:
-            import openpyxl
-            workbook = openpyxl.Workbook()
-            sheet = workbook.active
-            for col_num, column in enumerate(second, start=1):
-                for row_num, value in enumerate(column, start=1):
-                    sheet.cell(row=row_num, column=col_num, value=value)
-            output_excel_path = os.path.join(output_dir, f'{global_time}.xlsx')
-            workbook.save(output_excel_path)
+    import openpyxl
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    for col_num, column in enumerate(second, start=1):
+        for row_num, value in enumerate(column, start=1):
+            sheet.cell(row=row_num, column=col_num, value=value)
+    output_excel_path = os.path.join(output_dir, f'{global_time}.xlsx')
+    workbook.save(output_excel_path)
 
     print(f"[地面流量] 完成! 输出: {output_dir}/{global_time}.xlsx")
     return os.path.join(output_dir, f'{global_time}.xlsx')
