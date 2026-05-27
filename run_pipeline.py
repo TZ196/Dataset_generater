@@ -257,10 +257,16 @@ def main():
     args = parse_args()
     stages = parse_stages(args.stages)
 
-    # 每次运行使用时间戳子目录，避免覆盖之前的结果
+    # 每次运行使用 星座名+仿真时长+时间戳 子目录
     from datetime import datetime as dt_now
+    if args.constellation:
+        prefix = f"{args.constellation}_{int(args.duration)}s"
+    else:
+        import re
+        base = os.path.splitext(os.path.basename(args.tle_file))[0]
+        prefix = f"{base}_{int(args.duration)}s"
     ts = dt_now.now().strftime("%Y%m%d_%H%M%S")
-    args.output_dir = os.path.join(args.output_dir, ts)
+    args.output_dir = os.path.join(args.output_dir, f"{prefix}_{ts}")
 
     # 构建子目录
     run_dirs = {
