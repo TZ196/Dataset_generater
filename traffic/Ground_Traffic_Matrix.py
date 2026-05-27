@@ -110,11 +110,11 @@ def generate_ground_traffic(
             for col_num, column in enumerate(second, start=1):
                 for row_num, value in enumerate(column, start=1):
                     sheet.cell(row=row_num, column=col_num, value=value)
-            output_excel_path = os.path.join(output_dir, '1000.xlsx')
+            output_excel_path = os.path.join(output_dir, f'{global_time}.xlsx')
             workbook.save(output_excel_path)
 
-    print(f"[地面流量] 完成! 输出: {output_dir}/1000.xlsx")
-    return os.path.join(output_dir, '1000.xlsx')
+    print(f"[地面流量] 完成! 输出: {output_dir}/{global_time}.xlsx")
+    return os.path.join(output_dir, f'{global_time}.xlsx')
 
 
 if __name__ == "__main__":

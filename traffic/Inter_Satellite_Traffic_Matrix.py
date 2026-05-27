@@ -27,7 +27,7 @@ def generate_inter_satellite_traffic(
 
     参数：
         vis_dir:             可见性 CSV 目录 (默认 {BASE_DIR}/visibility_output)
-        ground_traffic_path: 地面流量 xlsx 路径 (默认 {BASE_DIR}/ground_traffic/1000.xlsx)
+        ground_traffic_path: 地面流量 xlsx 路径 (默认 {BASE_DIR}/ground_traffic/{global_time}.xlsx)
         sat_names_path:      卫星名称 xlsx 路径 (默认 {BASE_DIR}/visibility_output/satellite_names.xlsx)
         output_dir:          输出目录 (默认 {BASE_DIR}/inter_satellite_traffic)
         global_time:         时间步数
@@ -40,7 +40,7 @@ def generate_inter_satellite_traffic(
     if vis_dir is None:
         vis_dir = os.path.join(BASE_DIR, 'visibility_output')
     if ground_traffic_path is None:
-        ground_traffic_path = os.path.join(BASE_DIR, 'ground_traffic', '1000.xlsx')
+        ground_traffic_path = os.path.join(BASE_DIR, 'ground_traffic', f'{global_time}.xlsx')
     if sat_names_path is None:
         sat_names_path = os.path.join(BASE_DIR, 'visibility_output', 'satellite_names.xlsx')
     if output_dir is None:

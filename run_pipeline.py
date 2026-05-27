@@ -211,7 +211,7 @@ def run_stage_satellite(args, run_dirs):
 
     return generate_inter_satellite_traffic(
         vis_dir=run_dirs["visibility"],
-        ground_traffic_path=os.path.join(run_dirs["ground"], "1000.xlsx"),
+        ground_traffic_path=os.path.join(run_dirs["ground"], f"{int(args.duration)}.xlsx"),
         sat_names_path=os.path.join(run_dirs["visibility"], "satellite_names.xlsx"),
         output_dir=run_dirs["satellite"],
         global_time=int(args.duration),
