@@ -6,16 +6,6 @@ import random
 import math
 import collections
 
-
-class Node():
-    def __init__(self, val=None):
-        self.val = val
-        self.children = []
-
-    def add_child(self, node):
-        self.children.append(node)
-
-
 GEANT_Normalized = [0.666375187, 0.618642091, 0.590977571, 0.563213085, 0.541584313, 0.533839914,
                     0.583266097, 0.667692083, 0.791995807, 0.888743851, 0.933041611, 0.981479064,
                     0.972636759, 0.990605207, 1.000000000, 0.950194854, 0.942922186, 0.881275688,
@@ -73,23 +63,19 @@ def generate_ground_traffic(
             lat, lon = tem.coord_trans(lat=coor['lat'], lon=coor['lon'])
             time_zone = math.floor(lon / 15)
             value = zone_stat_val_list[time_zone].popleft()
-            OringinNode = Node(i)
-            Des_number = random.randint(1, 3)
-            for des_count in range(0, Des_number):
-                des_time_zone = time_zone
-                while (des_time_zone == time_zone):
-                    random.seed(None)
-                    des = random.randint(0, n_ter - 1)
-                    des_coor = coordinate.loc[des]
-                    lat, lon = tem.coord_trans(lat=des_coor['lat'], lon=des_coor['lon'])
-                    des_time_zone = math.floor(lon / 15)
-                DesNode = Node(des)
-                OringinNode.add_child(DesNode)
+            # 论文公式(19): 每个站均匀随机选1个不同时区的目的地, F(i,j)=U(0.1,1)×f_i
+            random.seed(j * 10000 + i)
+            des_time_zone = time_zone
+            while (des_time_zone == time_zone):
+                des = random.randint(0, n_ter - 1)
+                des_coor = coordinate.loc[des]
+                lat, lon = tem.coord_trans(lat=des_coor['lat'], lon=des_coor['lon'])
+                des_time_zone = math.floor(lon / 15)
+            traffic = random.uniform(0.1, 1.0) * value
             destination.append("*")
             traffic_value.append("*")
-            for child in OringinNode.children:
-                destination.append(child.val)
-                traffic_value.append(value)
+            destination.append(des)
+            traffic_value.append(traffic)
             destination.append("/")
             traffic_value.append("/")
 
