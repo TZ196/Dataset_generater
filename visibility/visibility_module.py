@@ -147,7 +147,13 @@ def _worker_visibility(args):
             continue
 
         if len(times) == 0:
-            rows.append([station_name, sat_name, 0.0, 0.0])
+            # 无升降事件: 检查卫星是否全程可见
+            t_mid = ts.from_datetime(t0_dt + timedelta(seconds=duration_seconds / 2))
+            alt, _, _ = (sat - ground_pos).at(t_mid).altaz()
+            if alt.degrees >= min_elevation_deg:
+                rows.append([station_name, sat_name, 0.0, float(duration_seconds)])
+            else:
+                rows.append([station_name, sat_name, 0.0, 0.0])
             continue
 
         # 解析 rise/set 事件
