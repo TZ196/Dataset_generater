@@ -1,5 +1,5 @@
-skyfield
-sgp4
-numpy
-pandas
-openpyxl
+skyfield>=1.47
+sgp4>=2.23
+numpy>=1.24,<3.0
+pandas>=2.0
+openpyxl>=3.0
