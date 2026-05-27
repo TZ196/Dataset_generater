@@ -19,12 +19,9 @@ def cal_ground_sat(g_time, data):
         if (ground != last):
             service_time = sorted(service_time.items(), key=lambda kv: (kv[1], kv[0]))
             non_zero_sat = [sat for sat, ser_time in service_time if ser_time != 0.0]
-            try:
-                sat_index = non_zero_sat
-                ground_sat[last] = sat_index
-                service_time = {}
-            except:
-                pass
+            if non_zero_sat:
+                ground_sat[last] = non_zero_sat[-1]   # 论文: 选服务时间最长的1颗
+            service_time = {}
 
         if (g_time >= start) & (g_time <= end):
             ser_time = end - g_time
@@ -32,15 +29,14 @@ def cal_ground_sat(g_time, data):
 
         if (g_time < start):
             service_time[sat] = 0.0
-        
+
         if (g_time > end):
             service_time[sat] = 0.0
         if (i + 1) == data.shape[0]:
             service_time = sorted(service_time.items(), key=lambda kv: (kv[1], kv[0]))
             non_zero_sat = [sat for sat, ser_time in service_time if ser_time != 0.0]
-
-            sat_index = non_zero_sat
-            ground_sat[ground] = sat_index
+            if non_zero_sat:
+                ground_sat[ground] = non_zero_sat[-1]  # 论文: 选服务时间最长的1颗
         last = ground
 
     return ground_sat

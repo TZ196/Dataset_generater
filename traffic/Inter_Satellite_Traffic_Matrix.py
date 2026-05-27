@@ -131,19 +131,13 @@ def generate_inter_satellite_traffic(
                     dst_ground_value_count += 1
                     continue
                 dst_sat = ground_sat[destination_ground]
-                if src_sat != dst_sat:
-                    value = dst_ground_value[dst_ground_value_count]
-                    for Origin in src_sat:
-                        if Origin not in sate_ref:
-                            continue
-                        for Destination in dst_sat:
-                            if Destination not in sate_ref:
-                                continue
-                            if Origin != sate_ref[Destination]:
-                                Destination = sate_ref[Destination]
-                                sat_matrix[sate_ref[Origin]][Destination] = (
-                                    sat_matrix[sate_ref[Origin]][Destination] + value
-                                )
+                # 论文: 排除自环 (src_sat == dst_sat), 单卫星映射
+                if src_sat in sate_ref and dst_sat in sate_ref:
+                    src_idx = sate_ref[src_sat]
+                    dst_idx = sate_ref[dst_sat]
+                    if src_idx != dst_idx:
+                        value = dst_ground_value[dst_ground_value_count]
+                        sat_matrix[src_idx][dst_idx] += value
                 dst_ground_value_count += 1
 
         sat_matrix_all.extend(sat_matrix)
